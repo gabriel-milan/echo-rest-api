@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=R9EXkbAnCPkF4tpm
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./db/postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./api
+    restart: unless-stopped
+    # These are default values
+    environment:
+      - API_URL=:1323
+      - DB_HOST=postgres
+      - DB_NAME=postgres
+      - DB_PASSWORD=R9EXkbAnCPkF4tpm
+      - DB_PORT=5432
+      - DB_SSL_ENABLED=false
+      - DB_USER=postgres
+      - JWT_SECRET=secret
+      - MAX_REQUESTS_PER_SECOND=100
+    ports:
+      - 1323:1323 # Should be <any-port>:API_URL_PORT
+    depends_on:
+      - postgres
+
+volumes:
+  db-data:
